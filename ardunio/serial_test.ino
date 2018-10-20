@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
+#include "../shared/CommunicationsConstants.h"
 
 void setup() {
     Serial.begin(9600);
