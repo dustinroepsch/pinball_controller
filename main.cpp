@@ -27,7 +27,7 @@ int main()
 
     // font.loadFromFile("fonts/Roboto-Regular.ttf");
     double i = 0;
-    char b = 1;
+    int b = 1;
     // sf::Clock deltaClock;
     while (1)
     {
