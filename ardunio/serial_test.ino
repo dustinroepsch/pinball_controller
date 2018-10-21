@@ -14,7 +14,11 @@ void loop()
     {
         int bt = Serial.read();
 
-        Serial.write(bt == 0 ? 8 : bt == 1 ? 34 : 10);
+        if (bt == 10) {
+            Serial.write(1);
+        } else {
+            Serial.write(0);
+        }
     }
     // i++;
 }
