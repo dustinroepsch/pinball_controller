@@ -3,7 +3,7 @@
 #include "../shared/CommunicationConstants.h"
 
 PinballScreenRenderer::PinballScreenRenderer()
-    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0), num_times_all_judges_hit(0), mediaTimer(0) , patCoTimer(0)
+    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0), num_times_all_judges_hit(0), mediaTimer(0), patCoTimer(0)
 {
 
     serial.set_option(BAUD);
@@ -82,14 +82,18 @@ void PinballScreenRenderer::checkPatCo()
 
     int hit = fetch_arduino_state(Communication::GET_PAT_CO);
 
-    if (hit && patCoTimer == 0 ) {
+    if (hit && patCoTimer == 0)
+    {
         patCoTimer += 5;
-        if (rand() % 2 == 0) {
+        if (rand() % 2 == 0)
+        {
             carterScore += 20;
-        } else {
+        }
+        else
+        {
             reaganScore += 20;
         }
-    } 
+    }
 }
 
 void PinballScreenRenderer::checkSensors()
@@ -142,6 +146,27 @@ void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
     render_texture(renderWindow, frameTexture);
     render_texture(renderWindow, scoreBoardTexture);
 
+    sf::Text carterText;
+    carterText.setFont(font);
+    carterText.setFillColor(sf::Color::Blue);
+    carterText.setCharacterSize(80);
+    carterText.setPosition({300, 190});
+    carterText.setString(std::to_string(carterScore));
+
+    sf::Text reaganText;
+    reaganText.setFont(font);
+    reaganText.setFillColor(sf::Color::Red);
+    reaganText.setCharacterSize(80);
+    reaganText.setPosition({420, 190});
+    reaganText.setString(std::to_string(reaganScore));
+
+    sf::Text score;
+    score.setFont(font);
+    score.setFillColor(sf::Color::Red);
+    score.setCharacterSize(70);
+    score.setPosition({350, 210});
+    score.setString(std::to_string(reaganScore - carterScore));
+
     if (judge1_image_timeout_secs > 0)
     {
         render_texture(renderWindow, judge1);
@@ -157,20 +182,7 @@ void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
         render_texture(renderWindow, judge3);
     }
 
-    sf::Text carterText;
-    carterText.setFont(font);
-    carterText.setFillColor(sf::Color::Blue);
-    carterText.setCharacterSize(80);
-    carterText.setPosition({300, 190});
-    carterText.setString(std::to_string(carterScore));
-
-    sf::Text reaganText;
-    reaganText.setFont(font);
-    reaganText.setFillColor(sf::Color::Red);
-    reaganText.setCharacterSize(80);
-    reaganText.setPosition({420, 190});
-    reaganText.setString(std::to_string(reaganScore));
-
     renderWindow.draw(reaganText);
     renderWindow.draw(carterText);
+    renderWindow.draw(score);
 }
