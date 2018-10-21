@@ -1,13 +1,33 @@
 #include "PinballScreenRenderer.hpp"
 
-PinballScreenRenderer::PinballScreenRenderer() : carterScore(0), reaganScore(0)
+PinballScreenRenderer::PinballScreenRenderer()
+    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one)
 {
+
+    serial.set_option(BAUD);
+    serial.set_option(FLOW);
+    serial.set_option(PARITY);
+    serial.set_option(STOP);
+
     frameTexture.loadFromFile("assets/frame.png");
     scoreBoardTexture.loadFromFile("assets/score_text.png");
     font.loadFromFile("assets/Lora-Regular.ttf");
 }
 
-void PinballScreenRenderer::update(sf::Time deltaTime) {
+int PinballScreenRenderer::fetch_arduino_state(int getter_code)
+{
+    serial.write_some(boost::asio::buffer(&getter_code, 1));
+    int output;
+    boost::asio::read(serial, boost::asio::buffer(&output, 1));
+    return output;
+}
+
+void PinballScreenRenderer::checkSensors()
+{
+}
+
+void PinballScreenRenderer::update(sf::Time deltaTime)
+{
     static double elapsedSeconds = 0;
     elapsedSeconds += deltaTime.asSeconds();
     carterScore = static_cast<int>(elapsedSeconds);
@@ -34,7 +54,6 @@ void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
     reaganText.setCharacterSize(80);
     reaganText.setPosition({420, 190});
     reaganText.setString(std::to_string(reaganScore));
-
 
     renderWindow.draw(frameSprite);
     renderWindow.draw(scoreSprite);
