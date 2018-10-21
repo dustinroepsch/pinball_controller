@@ -72,12 +72,12 @@ void handleRightButtonStateChanges()  {
     static int rightButtonPressedAlready = 0;
     if(rightButtonPressed() && !rightButtonPressedAlready){
         rightButtonPressedAlready = 1;
-        rFlip.write(180-90);
+        rFlip.write(90);
     }
     
     if (!rightButtonPressed() && rightButtonPressedAlready) {
       rightButtonPressedAlready = 0;
-      rFlip.write(180);
+      rFlip.write(0);
     }
 }
 
