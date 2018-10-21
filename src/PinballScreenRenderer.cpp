@@ -58,23 +58,18 @@ void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter
 
 void PinballScreenRenderer::checkMedia()
 {
-    static int numTimesMediaHit = 1;
+    static int numTimesMediaHit = 0;
 
     int hit = fetch_arduino_state(Communication::GET_MEDIA);
 
-    if (mediaTimer == 0 && hit)
-    {
+    if (hit & mediaTimer == 0) {
         mediaTimer += 1;
         numTimesMediaHit++;
-    }
-
-    if ((numTimesMediaHit % 3) == 0)
-    {
-        carterScore += 15;
-    }
-    else
-    {
-        reaganScore += 10;
+        if (numTimesMediaHit % 3 == 0) {
+            carterScore += 15;
+        } else {
+            reaganScore += 10;
+        }
     }
 }
 
