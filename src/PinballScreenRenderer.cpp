@@ -1,5 +1,6 @@
 #include "PinballScreenRenderer.hpp"
 
+
 PinballScreenRenderer::PinballScreenRenderer()
     : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one)
 {
@@ -14,10 +15,10 @@ PinballScreenRenderer::PinballScreenRenderer()
     font.loadFromFile("assets/Lora-Regular.ttf");
 }
 
-int PinballScreenRenderer::fetch_arduino_state(int getter_code)
+int PinballScreenRenderer::fetch_arduino_state(uint8_t getter_code)
 {
     serial.write_some(boost::asio::buffer(&getter_code, 1));
-    int output;
+    uint8_t output;
     boost::asio::read(serial, boost::asio::buffer(&output, 1));
     return output;
 }

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "boost/asio.hpp"
+#include <cstdint>
 
 class PinballScreenRenderer
 {
@@ -12,7 +13,7 @@ class PinballScreenRenderer
     void update(sf::Time deltaTime);
 
   private:
-    int fetch_arduino_state(int getter_code);
+    int fetch_arduino_state(uint8_t getter_code);
     void checkSensors();
     
     sf::Texture frameTexture;
