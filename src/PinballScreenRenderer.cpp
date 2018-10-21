@@ -36,13 +36,12 @@ void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter
 {
     if (!judge_has_been_hit)
     {
-        reaganScore += 5;
         judge_has_been_hit = fetch_arduino_state(getter_code);
         if (judge_has_been_hit)
         {
             set_arduino_state(setter_code);
             image_timeout += 5;
-            reaganScore += 10;
+            reaganScore += 5;
 
             if (judge1_hit && judge2_hit && judge3_hit)
             {
