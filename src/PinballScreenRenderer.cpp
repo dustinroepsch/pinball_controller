@@ -24,6 +24,8 @@ int PinballScreenRenderer::fetch_arduino_state(int getter_code)
 
 void PinballScreenRenderer::checkSensors()
 {
+    carterScore = fetch_arduino_state(0);
+    reaganScore = fetch_arduino_state(1);
 }
 
 void PinballScreenRenderer::update(sf::Time deltaTime)
