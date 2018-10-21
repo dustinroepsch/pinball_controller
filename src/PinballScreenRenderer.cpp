@@ -34,7 +34,7 @@ void PinballScreenRenderer::set_arduino_state(uint8_t setter_code)
 
 void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter_code, uint8_t setter_code, double &image_timeout)
 {
-    if (!judge_has_been_hit)
+    if (image_timeout == 0 && !judge_has_been_hit)
     {
         judge_has_been_hit = fetch_arduino_state(getter_code);
         if (judge_has_been_hit)
