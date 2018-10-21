@@ -164,7 +164,7 @@ void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
     score.setFont(font);
     score.setFillColor(sf::Color::Red);
     score.setCharacterSize(70);
-    score.setPosition({350, 210});
+    score.setPosition({400, 330});
     score.setString(std::to_string(reaganScore - carterScore));
 
     if (judge1_image_timeout_secs > 0)
