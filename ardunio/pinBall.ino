@@ -6,6 +6,11 @@ Made by Valery S for Hack ISU X
 
  #include <Servo.h>
 
+ #define RIGHT_FLIP_DOWN (180 - 15)
+ #define RIGHT_FLIP_UP 90
+ #define LEFT_FLIP_DOWN 0
+ #define LEFT_FLIP_UP
+
  namespace Communication
 {
 const int GET_FOREIGN_POLICY = 0;
@@ -55,12 +60,12 @@ void handleLeftButtonStateChanges()  {
     static int leftButtonPressedAlready = 0;
     if(leftButtonPressed() && !leftButtonPressedAlready){
         leftButtonPressedAlready = 1;
-        lFlip.write(90);
+        lFlip.write(LEFT_FLIP_UP);
     }
     
     if (!leftButtonPressed() && leftButtonPressedAlready) {
       leftButtonPressedAlready = 0;
-      lFlip.write(0);
+      lFlip.write(LEFT_FLIP_DOWN);
     }
 }
 
@@ -72,12 +77,12 @@ void handleRightButtonStateChanges()  {
     static int rightButtonPressedAlready = 0;
     if(rightButtonPressed() && !rightButtonPressedAlready){
         rightButtonPressedAlready = 1;
-        rFlip.write(90);
+        rFlip.write(RIGHT_FLIP_UP);
     }
     
     if (!rightButtonPressed() && rightButtonPressedAlready) {
       rightButtonPressedAlready = 0;
-      rFlip.write(180);
+      rFlip.write(RIGHT_FLIP_DOWN);
     }
 }
 
@@ -86,6 +91,10 @@ void setup() {
 Serial.begin(9600);
   rFlip.attach(5);
   lFlip.attach(6);
+
+  rFlip.write(RIGHT_FLIP_DOWN);
+  lFlip.write(LEFT_FLIP_DOWN);
+
   BerlinWall.attach(3);
   pinMode(2,INPUT_PULLUP);//flipperRbutt
   pinMode(4,INPUT_PULLUP);//foreign policy 
