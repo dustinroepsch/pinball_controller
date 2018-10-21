@@ -30,9 +30,7 @@ void PinballScreenRenderer::checkSensors()
 
 void PinballScreenRenderer::update(sf::Time deltaTime)
 {
-    static double elapsedSeconds = 0;
-    elapsedSeconds += deltaTime.asSeconds();
-    carterScore = static_cast<int>(elapsedSeconds);
+    checkSensors();
 }
 
 void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
