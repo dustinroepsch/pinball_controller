@@ -11,6 +11,6 @@ find_package(Boost REQUIRED COMPONENTS system)
 
 include_directories(${SFML_INCLUDE_DIR} include ${Boost_INCLUDE_DIRS})
 
-add_executable(PinballController main.cpp)
+add_executable(PinballController main.cpp src/PinballScreenRenderer.cpp)
 
 target_link_libraries(PinballController ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${Boost_LIBRARIES} -lpthread)

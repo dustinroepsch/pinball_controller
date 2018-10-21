@@ -5,11 +5,16 @@
 
 class PinballScreenRenderer
 {
-    public:
-    private:
-    sf::Texture texture;
-
-
-}
+  public:
+    PinballScreenRenderer();
+    void render(sf::RenderWindow &renderWindow);
+    void update(sf::Time deltaTime);
+  private:
+    sf::Texture frameTexture;
+    sf::Texture scoreBoardTexture;
+    sf::Font font;
+    int carterScore;
+    int reaganScore;
+};
 
 #endif
