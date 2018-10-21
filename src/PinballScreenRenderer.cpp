@@ -3,7 +3,7 @@
 #include "../shared/CommunicationConstants.h"
 
 PinballScreenRenderer::PinballScreenRenderer()
-    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0)
+    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0), num_times_all_judges_hit(0)
 {
 
     serial.set_option(BAUD);
@@ -36,11 +36,24 @@ void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter
 {
     if (!judge_has_been_hit)
     {
+        reaganScore += 5;
         judge_has_been_hit = fetch_arduino_state(getter_code);
         if (judge_has_been_hit)
         {
             set_arduino_state(setter_code);
             image_timeout += 5;
+            reaganScore += 10;
+
+            if (judge1_hit && judge2_hit && judge3_hit)
+            {
+                reaganScore += 15;
+                judge1_hit = false;
+                judge2_hit = false;
+                judge3_hit = false;
+                set_arduino_state(Communication::UNSET_LIGHTS_JUDICIAL_O);
+                set_arduino_state(Communication::UNSET_LIGHTS_JUDICIAL_1);
+
+            }
         }
     }
 }

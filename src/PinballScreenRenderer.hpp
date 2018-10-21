@@ -37,6 +37,8 @@ class PinballScreenRenderer
     double judge2_image_timeout_secs;
     double judge3_image_timeout_secs;
 
+    int num_times_all_judges_hit;
+
 
     //serial comm
 
