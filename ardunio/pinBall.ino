@@ -60,7 +60,7 @@ void handleLeftButtonStateChanges()  {
     
     if (!leftButtonPressed() && leftButtonPressedAlready) {
       leftButtonPressedAlready = 0;
-      lFlip.write(180);
+      lFlip.write(0);
     }
 }
 
