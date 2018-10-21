@@ -1,8 +1,9 @@
 #include "PinballScreenRenderer.hpp"
 
+#include "../shared/CommunicationConstants.h"
 
 PinballScreenRenderer::PinballScreenRenderer()
-    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one)
+    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0)
 {
 
     serial.set_option(BAUD);
@@ -13,6 +14,9 @@ PinballScreenRenderer::PinballScreenRenderer()
     frameTexture.loadFromFile("assets/frame.png");
     scoreBoardTexture.loadFromFile("assets/score_text.png");
     font.loadFromFile("assets/Lora-Regular.ttf");
+    judge1.loadFromFile("assets/judge1.png");
+    judge2.loadFromFile("assets/judge2.png");
+    judge3.loadFromFile("assets/judge3.png");
 }
 
 int PinballScreenRenderer::fetch_arduino_state(uint8_t getter_code)
@@ -23,24 +27,83 @@ int PinballScreenRenderer::fetch_arduino_state(uint8_t getter_code)
     return output;
 }
 
+void PinballScreenRenderer::set_arduino_state(uint8_t setter_code)
+{
+    serial.write_some(boost::asio::buffer(&setter_code, 1));
+}
+
+void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter_code, uint8_t setter_code, double &image_timeout)
+{
+    if (!judge_has_been_hit)
+    {
+        judge_has_been_hit = fetch_arduino_state(getter_code);
+        if (judge_has_been_hit)
+        {
+            set_arduino_state(setter_code);
+            image_timeout += 5;
+        }
+    }
+}
+
 void PinballScreenRenderer::checkSensors()
 {
-    carterScore = fetch_arduino_state(0);
-    reaganScore = fetch_arduino_state(1);
+    check_judge(judge1_hit, Communication::GET_JUDICIAL_O, Communication::SET_LIGHTS_JUDICIAL_O, judge1_image_timeout_secs);
+    check_judge(judge2_hit, Communication::GET_JUDICIAL_1, Communication::SET_LIGHTS_JUDICIAL_1, judge2_image_timeout_secs);
+    check_judge(judge3_hit, Communication::GET_JUDICIAL_2, Communication::SET_LIGHTS_JUDICIAL_O, judge3_image_timeout_secs);
+}
+
+void tickdown_timer(sf::Time deltaTime, double &timer)
+{
+    if (timer <= deltaTime.asSeconds())
+    {
+        timer = 0;
+    }
+    else
+    {
+        timer -= deltaTime.asSeconds();
+    }
+
+    //doubles are weird
+    if (timer < 0)
+    {
+        timer = 0;
+    }
 }
 
 void PinballScreenRenderer::update(sf::Time deltaTime)
 {
     checkSensors();
+    tickdown_timer(deltaTime, judge1_image_timeout_secs);
+    tickdown_timer(deltaTime, judge2_image_timeout_secs);
+    tickdown_timer(deltaTime, judge3_image_timeout_secs);
+}
+
+void render_texture(sf::RenderWindow &renderWindow, sf::Texture &texture)
+{
+    sf::Sprite sprite;
+    sprite.setTexture(texture);
+    renderWindow.draw(sprite);
 }
 
 void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
 {
-    sf::Sprite frameSprite;
-    frameSprite.setTexture(frameTexture);
+    render_texture(renderWindow, frameTexture);
+    render_texture(renderWindow, scoreBoardTexture);
 
-    sf::Sprite scoreSprite;
-    scoreSprite.setTexture(scoreBoardTexture);
+    if (judge1_image_timeout_secs > 0)
+    {
+        render_texture(renderWindow, judge1);
+    }
+
+    if (judge2_image_timeout_secs > 0)
+    {
+        render_texture(renderWindow, judge2);
+    }
+
+    if (judge3_image_timeout_secs > 0)
+    {
+        render_texture(renderWindow, judge3);
+    }
 
     sf::Text carterText;
     carterText.setFont(font);
@@ -55,9 +118,6 @@ void PinballScreenRenderer::render(sf::RenderWindow &renderWindow)
     reaganText.setCharacterSize(80);
     reaganText.setPosition({420, 190});
     reaganText.setString(std::to_string(reaganScore));
-
-    renderWindow.draw(frameSprite);
-    renderWindow.draw(scoreSprite);
 
     renderWindow.draw(reaganText);
     renderWindow.draw(carterText);

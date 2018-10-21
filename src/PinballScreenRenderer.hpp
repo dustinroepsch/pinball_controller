@@ -14,13 +14,29 @@ class PinballScreenRenderer
 
   private:
     int fetch_arduino_state(uint8_t getter_code);
+    void set_arduino_state(uint8_t setter_code);
+    void check_judge(bool &judge_has_been_hit, uint8_t getter_code, uint8_t setter_code, double & image_timeout);
+
     void checkSensors();
     
     sf::Texture frameTexture;
     sf::Texture scoreBoardTexture;
+    sf::Texture judge1;
+    sf::Texture judge2;
+    sf::Texture judge3;
+
     sf::Font font;
     int carterScore;
     int reaganScore;
+
+    bool judge1_hit;
+    bool judge2_hit;
+    bool judge3_hit;
+
+    double judge1_image_timeout_secs;
+    double judge2_image_timeout_secs;
+    double judge3_image_timeout_secs;
+
 
     //serial comm
 

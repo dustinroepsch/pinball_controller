@@ -11,8 +11,8 @@ int main()
 {
 
 
-    // sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "Pinball Game", sf::Style::Fullscreen);
-    sf::RenderWindow window(sf::VideoMode(800, 480), "Pinball Game");
+    sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "Pinball Game", sf::Style::Fullscreen);
+    // sf::RenderWindow window(sf::VideoMode(800, 480), "Pinball Game");
 
 
     sf::Clock deltaClock;
