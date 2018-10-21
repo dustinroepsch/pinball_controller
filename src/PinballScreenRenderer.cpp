@@ -3,7 +3,7 @@
 #include "../shared/CommunicationConstants.h"
 
 PinballScreenRenderer::PinballScreenRenderer()
-    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0), num_times_all_judges_hit(0)
+    : carterScore(0), reaganScore(0), serial(io_context, "/dev/tty96B0"), BAUD(9600), FLOW(boost::asio::serial_port_base::flow_control::none), PARITY(boost::asio::serial_port_base::parity::none), STOP(boost::asio::serial_port_base::stop_bits::one), judge1_hit(false), judge2_hit(false), judge3_hit(false), judge1_image_timeout_secs(0), judge2_image_timeout_secs(0), judge3_image_timeout_secs(0), num_times_all_judges_hit(0), mediaTimer(0)
 {
 
     serial.set_option(BAUD);
@@ -51,9 +51,29 @@ void PinballScreenRenderer::check_judge(bool &judge_has_been_hit, uint8_t getter
                 judge3_hit = false;
                 set_arduino_state(Communication::UNSET_LIGHTS_JUDICIAL_O);
                 set_arduino_state(Communication::UNSET_LIGHTS_JUDICIAL_1);
-
             }
         }
+    }
+}
+
+void PinballScreenRenderer::checkMedia()
+{
+    static int numTimesMediaHit = 0;
+
+    int hit = fetch_arduino_state(Communication::GET_MEDIA);
+
+    if (mediaTimer == 0 && hit)
+    {
+        mediaTimer += 1;
+    }
+
+    if ((numTimesMediaHit % 3) == 0)
+    {
+        carterScore += 15;
+    }
+    else
+    {
+        reaganScore += 10;
     }
 }
 
@@ -62,6 +82,8 @@ void PinballScreenRenderer::checkSensors()
     check_judge(judge1_hit, Communication::GET_JUDICIAL_O, Communication::SET_LIGHTS_JUDICIAL_O, judge1_image_timeout_secs);
     check_judge(judge2_hit, Communication::GET_JUDICIAL_1, Communication::SET_LIGHTS_JUDICIAL_1, judge2_image_timeout_secs);
     check_judge(judge3_hit, Communication::GET_JUDICIAL_2, Communication::SET_LIGHTS_JUDICIAL_O, judge3_image_timeout_secs);
+
+    checkMedia();
 }
 
 void tickdown_timer(sf::Time deltaTime, double &timer)
@@ -88,6 +110,7 @@ void PinballScreenRenderer::update(sf::Time deltaTime)
     tickdown_timer(deltaTime, judge1_image_timeout_secs);
     tickdown_timer(deltaTime, judge2_image_timeout_secs);
     tickdown_timer(deltaTime, judge3_image_timeout_secs);
+    tickdown_timer(deltaTime, mediaTimer);
 }
 
 void render_texture(sf::RenderWindow &renderWindow, sf::Texture &texture)

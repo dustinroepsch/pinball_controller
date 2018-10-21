@@ -18,6 +18,7 @@ class PinballScreenRenderer
     void check_judge(bool &judge_has_been_hit, uint8_t getter_code, uint8_t setter_code, double & image_timeout);
 
     void checkSensors();
+    void checkMedia();
     
     sf::Texture frameTexture;
     sf::Texture scoreBoardTexture;
@@ -36,6 +37,7 @@ class PinballScreenRenderer
     double judge1_image_timeout_secs;
     double judge2_image_timeout_secs;
     double judge3_image_timeout_secs;
+    double mediaTimer;
 
     int num_times_all_judges_hit;
 
