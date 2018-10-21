@@ -9,7 +9,7 @@ Made by Valery S for Hack ISU X
  #define RIGHT_FLIP_DOWN (180 - 15)
  #define RIGHT_FLIP_UP 90
  #define LEFT_FLIP_DOWN 0
- #define LEFT_FLIP_UP
+ #define LEFT_FLIP_UP 90
 
  namespace Communication
 {
